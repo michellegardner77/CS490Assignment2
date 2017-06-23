@@ -7,17 +7,19 @@ import java.util.List;
  */
 public class Department {
 
-    private String departmentId;
+    private String departmentID;
     private String departmentName;
     private List<Course> courseList = null;
+    private List<Department> departments;
 
     public Department(String departmentId, String departmentName) {
-        this.departmentId = departmentId;
+        this.departmentID = departmentId;
         this.departmentName = departmentName;
     }
 
-    public String getDepartmentId() {
-        return departmentId;
+
+    public String getDepartmentID() {
+        return departmentID;
     }
 
     public String getDepartmentName() {
@@ -36,5 +38,16 @@ public class Department {
 
     public void addCourse(Course course){
         this.courseList.add(course); // added a new course to the courseList ArrayList
+    }
+
+
+    //Display courses to the related Department
+    public List<Course> displayCourses() {
+        return courseList;
+    }
+
+    //check if an ID matches to one in the list
+    public boolean isDepartmentID(String ID){
+        return this.departmentID.equals(ID);
     }
 }

@@ -1,13 +1,20 @@
 package Views;
 
+import Models.Course;
+import Models.Department;
 import javafx.scene.control.Alert;
 import javafx.scene.effect.DropShadow;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.NumberFormatter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 import static javafx.scene.paint.Color.BLACK;
 
@@ -20,10 +27,10 @@ public class MainWindow extends JFrame {
     private JComboBox departmentCombobox;
     private JTextField courseCodeTextField;
     private JTextField courseNameTextField;
-    private JTextField creditsTextField;
     private JButton displayAllButton;
     private JButton displayByDepartmentsButton;
     private JTextArea listTextArea;
+    private JFormattedTextField creditsFormattedTextField;
 
     public MainWindow() {
         this.setTitle("Courses");
@@ -42,6 +49,13 @@ public class MainWindow extends JFrame {
 
 //        frame.setBounds(new EmptyBorder(10,10,10,10));
 
+        NumberFormat numberFormat = NumberFormat.getIntegerInstance(); // Specify specific format here.
+        numberFormat.setMinimumIntegerDigits(0);
+        numberFormat.setMaximumIntegerDigits(1);
+        NumberFormatter numberFormatter = new NumberFormatter(numberFormat);
+        DefaultFormatterFactory factory = new DefaultFormatterFactory(numberFormatter);
+        creditsFormattedTextField.setFormatterFactory(factory);
+
         // Window shadow
         DropShadow border = new DropShadow();
         border.setColor(BLACK);
@@ -51,38 +65,48 @@ public class MainWindow extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e){
-
+                //read input for each textfield
                 String getCoursecode = courseCodeTextField.getText();
                 String getCourseName = courseNameTextField.getText();
-                int getNumOfCreds = creditsTextField.;
-                String getDepartment = departmentCombobox.getSelectedItem().toString();
+                int getNumOfCreds = Integer.parseInt(creditsFormattedTextField.getText());
+                String getDept = departmentCombobox.getSelectedItem().toString();
 
-                // TODO: add in credits. 
-                if(courseCodeTextField.getText().isEmpty() || courseCodeTextField.getText().isEmpty() || ){
+                // check to see if all textfields have input
+                if(courseCodeTextField.getText().isEmpty() || courseNameTextField.getText().isEmpty() || getNumOfCreds == 0 ){
                     JOptionPane.showMessageDialog(null, "Need to fill in all boxes.");
-                }else{
-                    JOptionPane.showMessageDialog(null, "Added Course.");
-                    //TODO: Add courses to list.
-                    // TODO: make sure Credits are ints, 1-5
+                }else if(getNumOfCreds < 0 || getNumOfCreds >5) {
+                    //check to see if credits are between 1 and 5
+                    JOptionPane.showMessageDialog(null, "Credits must be between 1 and 5.");
                 }
+//                else{
+//                    //add course to list of courses in department
+//                    Course course = new Course(getCoursecode,getCourseName, getNumOfCreds, getDept);
+//                    this.addCourse(course);
+//                    JOptionPane.showMessageDialog(null, "Added Course.");
+//                    listTextArea.display(getDept.getDepartmentID());
+//                }
+
+            }
+        });
 
 
 
-
-                }
-            });
-
-
+        //TODO:display the list within the scrollpane
         displayAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                //Display a list of all Departments and courses within
+//                Department selectedDepartment = departmentCombobox.getValue();
+//                listTextArea.display();
 
             }
         });
         displayByDepartmentsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                //Display single department with its related courses
+//                Department selectedDepartment = departmentCombobox.getValue();
+//                listTextArea.display(selectedDepartment.getDepartmentID());
             }
         });
     }
@@ -91,4 +115,6 @@ public class MainWindow extends JFrame {
         // TODO: place custom component creation codkdje here
     }
 }
+
+
 
