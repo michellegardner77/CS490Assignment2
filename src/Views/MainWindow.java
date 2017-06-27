@@ -1,20 +1,14 @@
 package Views;
 
+import Controllers.DepartmentController;
 import Models.Course;
 import Models.Department;
-import javafx.scene.control.Alert;
 import javafx.scene.effect.DropShadow;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
+import java.util.ArrayList;
 
 import static javafx.scene.paint.Color.BLACK;
 
@@ -24,13 +18,15 @@ import static javafx.scene.paint.Color.BLACK;
 public class MainWindow extends JFrame {
     private JPanel panel1;
     private JButton addCoursebutton;
-    private JComboBox departmentCombobox;
+    private JComboBox<Department> departmentCombobox;
     private JTextField courseCodeTextField;
     private JTextField courseNameTextField;
     private JButton displayAllButton;
     private JButton displayByDepartmentsButton;
     private JTextArea listTextArea;
     private JFormattedTextField creditsFormattedTextField;
+
+    private DepartmentController departmentController;
 
     public MainWindow() {
         this.setTitle("Courses");
@@ -49,35 +45,45 @@ public class MainWindow extends JFrame {
 
 //        frame.setBounds(new EmptyBorder(10,10,10,10));
 
-        NumberFormat numberFormat = NumberFormat.getIntegerInstance(); // Specify specific format here.
-        numberFormat.setMinimumIntegerDigits(0);
-        numberFormat.setMaximumIntegerDigits(1);
-        NumberFormatter numberFormatter = new NumberFormatter(numberFormat);
-        DefaultFormatterFactory factory = new DefaultFormatterFactory(numberFormatter);
-        creditsFormattedTextField.setFormatterFactory(factory);
-
         // Window shadow
         DropShadow border = new DropShadow();
         border.setColor(BLACK);
         border.setOffsetX(150);
 
         addCoursebutton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e){
-                //read input for each textfield
-                String getCoursecode = courseCodeTextField.getText();
-                String getCourseName = courseNameTextField.getText();
-                int getNumOfCreds = Integer.parseInt(creditsFormattedTextField.getText());
-                String getDept = departmentCombobox.getSelectedItem().toString();
+                //read input for each input field
+                String courseIDValue = courseCodeTextField.getText();
+                String courseNameValue = courseNameTextField.getText();
+                Department selectedDepartment = (Department) departmentCombobox.getSelectedItem();
 
                 // check to see if all textfields have input
-                if(courseCodeTextField.getText().isEmpty() || courseNameTextField.getText().isEmpty() || getNumOfCreds == 0 ){
-                    JOptionPane.showMessageDialog(null, "Need to fill in all boxes.");
-                }else if(getNumOfCreds < 0 || getNumOfCreds >5) {
-                    //check to see if credits are between 1 and 5
-                    JOptionPane.showMessageDialog(null, "Credits must be between 1 and 5.");
+                if(courseIDValue.isEmpty() || courseNameValue.isEmpty() ||  creditsFormattedTextField.getText().isEmpty()){
+                    JOptionPane.showMessageDialog(panel1, "Please provide required information.", "Empty Fields", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
+
+                int courseCredsIntValue = 0;
+                try{
+                // Makes sure the number is valid
+                    courseCredsIntValue = Integer.parseInt(creditsFormattedTextField.getText());
+                }catch(Exception ex){
+                    //check to see if credits are between 1 and 5
+                    JOptionPane.showMessageDialog(panel1, "Number of credits must be a number greater than 0 and less than 6.", "Invalid Credit", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+
+                if(courseCredsIntValue < 0 || courseCredsIntValue > 5) {
+                    //check to see if credits are between 1 and 5
+                    JOptionPane.showMessageDialog(panel1, "Credits must be greater than 0 and less than 6.", "Invalid Credit", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+
+
+
 //                else{
 //                    //add course to list of courses in department
 //                    Course course = new Course(getCoursecode,getCourseName, getNumOfCreds, getDept);
@@ -86,10 +92,9 @@ public class MainWindow extends JFrame {
 //                    listTextArea.display(getDept.getDepartmentID());
 //                }
 
+
             }
         });
-
-
 
         //TODO:display the list within the scrollpane
         displayAllButton.addActionListener(new ActionListener() {
@@ -109,6 +114,23 @@ public class MainWindow extends JFrame {
 //                listTextArea.display(selectedDepartment.getDepartmentID());
             }
         });
+
+
+        departmentController = new DepartmentController();
+
+        populateDepartmentUIList();
+    }
+
+    private void populateDepartmentUIList(){
+        ArrayList<Department> departmentList = departmentController.getDepartmentList();
+        for(Department department : departmentList){
+            departmentCombobox.addItem(department);
+        }
+    }
+
+    private void addCourse(String courseID, String courseTitle, int credits){
+        Department selectedDepartment = (Department) departmentCombobox.getSelectedItem();
+        departmentController.addCourseToDepartment(courseID, courseTitle, credits, selectedDepartment);
     }
 
     private void createUIComponents() {

@@ -1,5 +1,6 @@
 package Models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,8 +10,7 @@ public class Department {
 
     private String departmentID;
     private String departmentName;
-    private List<Course> courseList = null;
-    private List<Department> departments;
+    private ArrayList<Course> courseList = null;
 
     public Department(String departmentId, String departmentName) {
         this.departmentID = departmentId;
@@ -25,6 +25,8 @@ public class Department {
     public String getDepartmentName() {
         return departmentName;
     }
+
+    public ArrayList<Course> getCourseList() { return courseList; }
 
     //remove from array list by ID.
     public void removeCourse(String courseID){
@@ -49,5 +51,9 @@ public class Department {
     //check if an ID matches to one in the list
     public boolean isDepartmentID(String ID){
         return this.departmentID.equals(ID);
+    }
+
+    public String toString(){
+        return departmentID;
     }
 }
