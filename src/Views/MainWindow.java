@@ -23,10 +23,13 @@ public class MainWindow extends JFrame {
     private JTextField courseNameTextField;
     private JButton displayAllButton;
     private JButton displayByDepartmentsButton;
-    private JTextArea listTextArea;
     private JFormattedTextField creditsFormattedTextField;
+    private JList<String> courseJList;
+    private DefaultListModel<String> courseJListModel = new DefaultListModel<>();
 
     private DepartmentController departmentController;
+
+    private boolean displayByDepartment = false;
 
     public MainWindow() {
         this.setTitle("Courses");
@@ -55,11 +58,11 @@ public class MainWindow extends JFrame {
             public void actionPerformed(ActionEvent e){
                 //read input for each input field
                 String courseIDValue = courseCodeTextField.getText();
-                String courseNameValue = courseNameTextField.getText();
+                String courseTitleValue = courseNameTextField.getText();
                 Department selectedDepartment = (Department) departmentCombobox.getSelectedItem();
 
                 // check to see if all textfields have input
-                if(courseIDValue.isEmpty() || courseNameValue.isEmpty() ||  creditsFormattedTextField.getText().isEmpty()){
+                if(courseIDValue.isEmpty() || courseTitleValue.isEmpty() ||  creditsFormattedTextField.getText().isEmpty()){
                     JOptionPane.showMessageDialog(panel1, "Please provide required information.", "Empty Fields", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -74,44 +77,45 @@ public class MainWindow extends JFrame {
                     return;
                 }
 
-
+                // makes sure credits are between 0 and 6.
                 if(courseCredsIntValue < 0 || courseCredsIntValue > 5) {
                     //check to see if credits are between 1 and 5
                     JOptionPane.showMessageDialog(panel1, "Credits must be greater than 0 and less than 6.", "Invalid Credit", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
+                // called addCourse to add course to department
+                addCourse(courseIDValue, courseTitleValue, courseCredsIntValue);
+                clearInputFields();
 
-
-
-//                else{
-//                    //add course to list of courses in department
-//                    Course course = new Course(getCoursecode,getCourseName, getNumOfCreds, getDept);
-//                    this.addCourse(course);
-//                    JOptionPane.showMessageDialog(null, "Added Course.");
-//                    listTextArea.display(getDept.getDepartmentID());
-//                }
-
+                if(displayByDepartment){
+                    refreshJListShowDeptCourses();
+                }else{
+                    refreshJListShowAllCourses();
+                }
 
             }
         });
 
-        //TODO:display the list within the scrollpane
         displayAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Display a list of all Departments and courses within
-//                Department selectedDepartment = departmentCombobox.getValue();
-//                listTextArea.display();
+                if(displayByDepartment){
+                    displayByDepartment = false;
+                    refreshJListShowAllCourses();
+                }
 
             }
         });
+
         displayByDepartmentsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Display single department with its related courses
-//                Department selectedDepartment = departmentCombobox.getValue();
-//                listTextArea.display(selectedDepartment.getDepartmentID());
+                if(!displayByDepartment){
+                    displayByDepartment = true;
+                    refreshJListShowDeptCourses();
+                }
+
             }
         });
 
@@ -119,6 +123,14 @@ public class MainWindow extends JFrame {
         departmentController = new DepartmentController();
 
         populateDepartmentUIList();
+        departmentCombobox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(displayByDepartment){
+                    refreshJListShowDeptCourses();
+                }
+            }
+        });
     }
 
     private void populateDepartmentUIList(){
@@ -130,11 +142,45 @@ public class MainWindow extends JFrame {
 
     private void addCourse(String courseID, String courseTitle, int credits){
         Department selectedDepartment = (Department) departmentCombobox.getSelectedItem();
+
+        if(departmentController.getCourseById(courseID, selectedDepartment) != null){
+            //checks to see if course already exists in department
+            JOptionPane.showMessageDialog(panel1, "That course already exists!", "Course Exists", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         departmentController.addCourseToDepartment(courseID, courseTitle, credits, selectedDepartment);
     }
 
+    private void refreshJListShowAllCourses(){
+
+        courseJListModel.removeAllElements();
+
+        for(Course c : departmentController.getAllCourses()){
+            courseJListModel.addElement(c.getCourseID() + "    " + c.getCourseTitle());
+        }
+
+        courseJList.setModel(courseJListModel);
+    }
+
+    private void refreshJListShowDeptCourses(){
+        courseJListModel.removeAllElements();
+
+        for(Course c : departmentController.getCourseListByDepartment((Department) departmentCombobox.getSelectedItem())){
+            courseJListModel.addElement(c.getCourseID() + "    " + c.getCourseTitle());
+        }
+
+        courseJList.setModel(courseJListModel);
+    }
+
+    private void clearInputFields(){
+        courseCodeTextField.setText("");
+        courseNameTextField.setText("");
+        creditsFormattedTextField.setText("");
+    }
+
     private void createUIComponents() {
-        // TODO: place custom component creation codkdje here
+        // TODO: place custom component creation code here
     }
 }
 

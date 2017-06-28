@@ -42,7 +42,7 @@
         <properties/>
         <border type="none"/>
         <children>
-          <component id="3fcd4" class="javax.swing.JTextArea" binding="listTextArea">
+          <component id="391ec" class="javax.swing.JList" binding="courseJList">
             <constraints/>
             <properties/>
           </component>

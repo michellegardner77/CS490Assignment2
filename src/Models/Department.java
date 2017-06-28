@@ -10,7 +10,7 @@ public class Department {
 
     private String departmentID;
     private String departmentName;
-    private ArrayList<Course> courseList = null;
+    private ArrayList<Course> courseList = new ArrayList<>();
 
     public Department(String departmentId, String departmentName) {
         this.departmentID = departmentId;
