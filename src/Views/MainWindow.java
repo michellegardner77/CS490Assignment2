@@ -38,7 +38,7 @@ public class MainWindow extends JFrame {
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         // Set JFrame size
-        this.setSize(500, 200);
+        this.setSize(500, 300);
 
         // disable window resizing
         this.setResizable(false);
@@ -78,7 +78,7 @@ public class MainWindow extends JFrame {
                 }
 
                 // makes sure credits are between 0 and 6.
-                if(courseCredsIntValue < 0 || courseCredsIntValue > 5) {
+                if(courseCredsIntValue < 1 || courseCredsIntValue > 5) {
                     //check to see if credits are between 1 and 5
                     JOptionPane.showMessageDialog(panel1, "Credits must be greater than 0 and less than 6.", "Invalid Credit", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -150,6 +150,7 @@ public class MainWindow extends JFrame {
         }
 
         departmentController.addCourseToDepartment(courseID, courseTitle, credits, selectedDepartment);
+        JOptionPane.showMessageDialog(panel1, "Course Added!", "Course Added", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void refreshJListShowAllCourses(){
